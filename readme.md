@@ -13,6 +13,7 @@ Also, the pre-reqs to run this is the export the chats in a very specific way, w
 
 ## Tutorial:
 -b (--breach) : Counts breaches. Standard and original functionality
+
 -s (--stats) : counts top stats ( amounts of calladmins taken within the period defined). Counts dumb, so if you give it 20 years of logs, it'll count all activity in those 20 years. Haven't implemented any logic into it yet
 
 
