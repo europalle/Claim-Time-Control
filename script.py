@@ -242,7 +242,7 @@ class Analyzer:
                 delta = current.timestamp - prev.timestamp
                 minutes_diff = delta.total_seconds() / 60
                 
-                if 0.1 < minutes_diff < 5 and current.server != prev.server: #Magic logic. If current.server != prev.server and between 0.2 minutes and 4.9 minutes passed, it's a breach. I tried with if 0 < minutes_diff and it broke, so let's not mess with it please
+                if 0.1 < minutes_diff < 5 and current.server != prev.server: #Magic logic. If current.server != prev.server and between 0.2 minutes and 4.9 minutes passed, it's a breach.
                     breaches.append(Breach(
                         admin=admin,
                         alias_used=current.admin_original,
