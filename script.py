@@ -18,14 +18,14 @@ CONFIG = {
     "BLACKLIST_FILE": "blacklist.txt",
     "OUTPUT_BREACH_FILE": "breach_report.csv",
     "OUTPUT_STATS_FILE": "admin_stats.csv",
-    "SIMILARITY_THRESHOLD": 0.75,
-    "MIN_NAME_LENGTH": 3
+    "SIMILARITY_THRESHOLD": 0.75, #This is fuzzy adjustment, we're using fuzzy match to try and match names / aliases
+    "MIN_NAME_LENGTH": 3 # This value is so the script doesn't break. Cause... If we compare firstname on length below 3, the script dies. For some reason....
 }
 
 # ==========================================
 # TERMINAL COLORS
 # ==========================================
-class Colors:
+class Colors: #colors are pretty
     BLUE = '\033[94m'
     RED = '\033[91m'
     ORANGE = '\033[93m'
@@ -71,6 +71,7 @@ class Breach:
 # ==========================================
 # CLASS: IDENTITY MANAGER
 # ==========================================
+# This class is meant to check for aliases, and auto-link aliases with names. If the logs were presented with a steamid of the claiming admin, this whole class would be obsolete. 
 class IdentityManager:
     def __init__(self, alias_file: str, blacklist_file: str):
         self.alias_file = alias_file
@@ -152,6 +153,7 @@ class IdentityManager:
 # ==========================================
 # CLASS: LOG PARSER
 # ==========================================
+# Main parsing agent. Just rummages through the files, standard raise exception handling, read the code god dammit
 class LogParser:
     def __init__(self, filepath: str, identity_manager: IdentityManager):
         self.filepath = filepath
@@ -189,7 +191,7 @@ class LogParser:
 
     def _parse_single_block(self, block: str) -> Optional[LogEntry]:
         if "**Admin:**" not in block: return None
-        if "]" not in block: raise LogParseError("Missing timestamp bracket")
+        if "]" not in block: raise LogParseError("Missing timestamp bracket") #Never hit this, but now we've got it if it happens
             
         time_str = block.split(']')[0].strip()
         timestamp = self._parse_timestamp(time_str)
@@ -213,7 +215,7 @@ class LogParser:
         return LogEntry(canonical_name, raw_name, server, timestamp)
 
     def _parse_timestamp(self, time_str: str) -> datetime:
-        formats = ["%d/%m/%Y %H:%M", "%m/%d/%Y %H:%M", "%d-%m-%Y %H:%M"]
+        formats = ["%d/%m/%Y %H:%M", "%m/%d/%Y %H:%M", "%d-%m-%Y %H:%M"] #Considered just hardcoding a +1 hour into this, but. Don't really want to. It's messy.
         for fmt in formats:
             try:
                 return datetime.strptime(time_str, fmt)
@@ -240,7 +242,7 @@ class Analyzer:
                 delta = current.timestamp - prev.timestamp
                 minutes_diff = delta.total_seconds() / 60
                 
-                if 0.1 < minutes_diff < 5 and current.server != prev.server:
+                if 0.1 < minutes_diff < 5 and current.server != prev.server: #Magic logic. If current.server != prev.server and between 0.2 minutes and 4.9 minutes passed, it's a breach. I tried with if 0 < minutes_diff and it broke, so let's not mess with it please
                     breaches.append(Breach(
                         admin=admin,
                         alias_used=current.admin_original,
@@ -287,10 +289,10 @@ class Reporter:
     def print_breaches(self, breaches: List[Breach], output_file: str):
         print("")
         if not breaches:
-            Colors.print_tag("[INFO]", "No breaches found.")
+            Colors.print_tag("[INFO]", "No breaches found.") #Never seen this message
             return
 
-        Colors.print_tag("[ALERT]", f"FOUND {len(breaches)} RULE BREACHES")
+        Colors.print_tag("[ALERT]", f"FOUND {len(breaches)} RULE BREACHES") #Always see this message.
         print("-" * 110)
         print(f"{'ADMIN':<30} | {'TIME':<15} | {'GAP':<8} | {'SWITCH'}")
         print("-" * 110)
@@ -300,7 +302,7 @@ class Reporter:
             switch_str = f"{b.server_from} -> {b.server_to}"
             print(f"{b.admin:<30} | {time_str:<15} | {b.gap_minutes}m   | {switch_str}")
 
-        self._save_breaches_csv(breaches, output_file)
+        self._save_breaches_csv(breaches, output_file) #Saving to CSV for all that excel goodness (never used the csv file)
 
     def _save_breaches_csv(self, breaches, filepath):
         try:
@@ -347,7 +349,7 @@ class Reporter:
 # MAIN EXECUTION
 # ==========================================
 def main():
-    # 1. Parse Arguments
+    # 1. Parse Arguments. Gonna add easter eggs here : ) 
     parser = argparse.ArgumentParser(description="Discord Admin Log Analyzer")
     parser.add_argument("-b", "--breach", action="store_true", help="Check for 5-minute rule breaches")
     parser.add_argument("-s", "--stats", action="store_true", help="Show Admin Statistics (Top 20)")
