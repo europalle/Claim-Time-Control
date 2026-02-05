@@ -22,6 +22,7 @@ Also, the pre-reqs to run this is the export the chats in a very specific way, w
  - Expand on stats functionality, adding filters and/or arguments. Also month-by-month detection built in
  - Add a way to ensure it shows in local time (currently when I have to dig for breaches to ensure it's corect, i gotta go an hour forward. So timestamps are a little iffy)
  - Make the parser a bit more. Versatile(???)
+ - Move variables for files to check (alias list, blacklist, logs.txt) from hardcoded to variables in the script.
  - Add easter eggs (maybe a nyan cat?)
 
 
